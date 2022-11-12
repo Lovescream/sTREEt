@@ -1,5 +1,6 @@
 package com.jyoon.hackathon2022_test3;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -24,6 +25,11 @@ public class RenameActivity extends AppCompatActivity {
         inputAuthor = findViewById(R.id.inputAuthorName);
         btnCancel = findViewById(R.id.btnCancel);
         btnOK = findViewById(R.id.btnOK);
+
+        Intent intent = getIntent();
+
+        inputTreeName.setText(intent.getStringExtra("treeName"));
+        inputAuthor.setText(intent.getStringExtra("treeAuthor"));
 
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
