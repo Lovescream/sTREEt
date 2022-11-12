@@ -29,6 +29,11 @@
             </intent-filter>
         </activity>
         <activity android:name=".RenameActivity"/>
+        <activity
+            android:name=".Test"
+            android:exported="true">
+
+        </activity>
         <meta-data android:name="com.kakao.sdk.AppKey" android:value="ad82b5fef4721ba85f1a2349feea9136"/>
     </application>
 

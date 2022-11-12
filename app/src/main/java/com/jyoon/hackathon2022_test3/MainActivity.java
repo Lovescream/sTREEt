@@ -22,6 +22,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import net.daum.mf.map.api.MapPOIItem;
 import net.daum.mf.map.api.MapPoint;
 import net.daum.mf.map.api.MapView;
@@ -42,11 +48,14 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     LocationManager locationManager;
 
 
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference("tree");
         // Layout fields
         treeInfoLayout = findViewById(R.id.treeInfoLayout);
         btnGetLocation = findViewById(R.id.btnGetLocation);
@@ -96,9 +105,42 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         // 현재 위치에 마커 찍기.
         mapMarkerPoint(myLatitude, myLongitude, "현재 위치", MapPOIItem.MarkerType.BluePin, MapPOIItem.MarkerType.RedPin);
         // 100개 랜덤 마커 찍기.
-        for (int i=0;i<100;i++)temp(myLatitude, myLongitude);
-    }
+        //for (int i=0;i<100;i++)temp(myLatitude, myLongitude);
 
+        this.readOnce();
+    }
+    public void readOnce() {
+        databaseReference.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+            @Override
+            public void onSuccess(DataSnapshot dataSnapshot) {
+                Log.d("파이어베이스", dataSnapshot.toString()); // 한 번 호출
+
+                int index = 0;
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+
+                    String lat = postSnapshot.child("lat").getValue(String.class);
+                    String lng = postSnapshot.child("lng").getValue(String.class);
+                    String s = Integer.toString(index) + ":" + lat + ", " + lng;
+                    Log.d("파이어베이스", s);
+                    if (lat.equals("NULL") || lng.equals("NULL") || lat == "" || lng == "" || lat == null || lng == null
+                    || lat.equals("null") || lng.equals("null") || lat.length() == 0 || lng.length() == 0) continue;
+                    Double latitude = Double.parseDouble(lat);
+                    Double longitude = Double.parseDouble(lng);
+
+                    //String key = postSnapshot.getKey();
+                    index++;
+                    mapMarkerPoint(latitude, longitude, getTreeName(latitude, longitude), MapPOIItem.MarkerType.YellowPin, MapPOIItem.MarkerType.RedPin);
+                }
+
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("파이어베이스", ".");
+            }
+        });
+    }
     // getLocation: 경도, 위도, 고도를 받아온다.
     private void getLocation(LocationManager locationManager) {
         if ( Build.VERSION.SDK_INT >= 23 &&
