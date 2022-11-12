@@ -1,5 +1,9 @@
 package com.jyoon.hackathon2022_test3;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -37,8 +41,8 @@ import java.security.NoSuchAlgorithmException;
 
 public class MainActivity extends AppCompatActivity implements MapView.MapViewEventListener, MapView.POIItemEventListener {
 
-    double myLongitude;
-    double myLatitude;
+    public double myLongitude;
+    public double myLatitude;
 
     ViewGroup treeInfoLayout;
     Button btnGetLocation;
@@ -47,9 +51,57 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     MapView mapView;
     LocationManager locationManager;
 
+    MapPOIItem selectedMarker;
+    public int selectedIndex;
+    public Intent intent;
 
-    FirebaseDatabase firebaseDatabase;
-    DatabaseReference databaseReference;
+    public FirebaseDatabase firebaseDatabase;
+    public DatabaseReference databaseReference;
+
+    public ActivityResultLauncher<Intent> launcher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == RESULT_OK)
+                    {
+                        Intent resultIntent = result.getData();
+                        int index = resultIntent.getIntExtra("index", 0);
+                        double latitude = intent.getDoubleExtra("latitude", 0);
+                        double longitude = intent.getDoubleExtra("longitude", 0);
+                        String newName = resultIntent.getStringExtra("newName");
+                        String newAuthor = resultIntent.getStringExtra("newAuthor");
+                        String s = "[" + index + "] (" + latitude + ", " + longitude + ") (TREE: " + newName + ") (AUTHOR:" + newAuthor + ")";
+                        Log.d("파이어베이스", s);
+                        databaseReference.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+                            @Override
+                            public void onSuccess(DataSnapshot dataSnapshot) {
+                                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                                    int readIndex = Integer.parseInt(postSnapshot.child("id").getValue().toString());
+                                    if (index == readIndex) {
+                                        User user = new User(Integer.toString(index), newName, newAuthor, Double.toString(longitude), Double.toString(latitude));
+                                        Log.d("파이어베이스", newName);
+                                        Log.d("파이어베이스", newAuthor);
+                                        Log.d("파이어베이스", Double.toString(longitude));
+                                        Log.d("파이어베이스", Double.toString(latitude));
+                                        Log.d("파이어베이스", Integer.toString(index));
+                                        databaseReference.child(Integer.toString(index))
+                                                .setValue(user);
+
+                                        selectedMarker.setItemName(newName);
+                                        setTreeInfoLayout(newName, latitude, longitude, newAuthor);
+                                    }
+                                }
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.d("파이어베이스", ".");
+                            }
+                        });
+                    }
+                }
+            });
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,10 +134,8 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
         btnRename.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), RenameActivity.class);
-                intent.putExtra("treeName", txtTreeName.getText());
-                intent.putExtra("treeAuthor", txtTreeAuthor.getText());
-                startActivity(intent);
+                setIntent();
+                //startActivity(intent);
             }
         });
 
@@ -109,27 +159,66 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
 
         this.readOnce();
     }
+
+    public void setIntent() {
+        databaseReference.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+            @Override
+            public void onSuccess(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                    int readIndex = Integer.parseInt(postSnapshot.child("id").getValue().toString());
+                    if (selectedIndex == readIndex) {
+
+                        String lat = postSnapshot.child("lat").getValue(String.class);
+                        String lng = postSnapshot.child("lng").getValue(String.class);
+                        String treeName = postSnapshot.child("tree_name").getValue(String.class);
+                        String author = postSnapshot.child("user_name").getValue(String.class);
+                        String s = "[" + selectedIndex + "] (" + lat + ", " + lng + ") (TREE: " + treeName + ") (AUTHOR:" + author + ")";
+                        Log.d("파이어베이스", s);
+                        if (lat.equals("NULL") || lng.equals("NULL") || lat == "" || lng == "" || lat == null || lng == null
+                                || lat.equals("null") || lng.equals("null") || lat.length() == 0 || lng.length() == 0) continue;
+                        Double latitude = Double.parseDouble(lat);
+                        Double longitude = Double.parseDouble(lng);
+
+                        intent = new Intent(getApplicationContext(), RenameActivity.class);
+                        intent.putExtra("index", selectedIndex);
+                        intent.putExtra("treeName", txtTreeName.getText());
+                        intent.putExtra("treeAuthor", txtTreeAuthor.getText());
+                        intent.putExtra("latitude", latitude);
+                        intent.putExtra("longitude", longitude);
+
+                        if (intent != null) launcher.launch(intent);
+                    }
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("파이어베이스", ".");
+            }
+        });
+    }
     public void readOnce() {
         databaseReference.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
             @Override
             public void onSuccess(DataSnapshot dataSnapshot) {
                 Log.d("파이어베이스", dataSnapshot.toString()); // 한 번 호출
 
-                int index = 0;
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
-
+                    int index = Integer.parseInt(postSnapshot.child("id").getValue().toString());
                     String lat = postSnapshot.child("lat").getValue(String.class);
                     String lng = postSnapshot.child("lng").getValue(String.class);
-                    String s = Integer.toString(index) + ":" + lat + ", " + lng;
+                    String treeName = postSnapshot.child("tree_name").getValue(String.class);
+                    String author = postSnapshot.child("user_name").getValue(String.class);
+                    String s = "[" + index + "] (" + lat + ", " + lng + ") (TREE: " + treeName + ") (AUTHOR:" + author + ")";
                     Log.d("파이어베이스", s);
                     if (lat.equals("NULL") || lng.equals("NULL") || lat == "" || lng == "" || lat == null || lng == null
                     || lat.equals("null") || lng.equals("null") || lat.length() == 0 || lng.length() == 0) continue;
                     Double latitude = Double.parseDouble(lat);
                     Double longitude = Double.parseDouble(lng);
 
-                    //String key = postSnapshot.getKey();
-                    index++;
-                    mapMarkerPoint(latitude, longitude, getTreeName(latitude, longitude), MapPOIItem.MarkerType.YellowPin, MapPOIItem.MarkerType.RedPin);
+                    createTreeMarker(index, latitude, longitude, treeName);
+                    //mapMarkerPoint(latitude, longitude, getTreeName(latitude, longitude), MapPOIItem.MarkerType.YellowPin, MapPOIItem.MarkerType.RedPin);
+
                 }
 
 
@@ -141,6 +230,15 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
             }
         });
     }
+
+
+
+
+
+
+
+
+
     // getLocation: 경도, 위도, 고도를 받아온다.
     private void getLocation(LocationManager locationManager) {
         if ( Build.VERSION.SDK_INT >= 23 &&
@@ -200,24 +298,16 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
 
         mapView.addPOIItem(marker);
     }
-    private void temp(double latitude, double longitude) {
-        int count = (int)(100 * Math.random());
-        for (int i = 0; i < count; i++) {
-            int a = (int)(10 * Math.random()); // 0 ~ 10
-            if (a < 2) {
-                latitude += 0.001;
-            }
-            else if (a < 5) {
-                latitude -= 0.001;
-            }
-            else if (a < 8) {
-                longitude += 0.001;
-            }
-            else {
-                longitude -= 0.001;
-            }
-        }
-        mapMarkerPoint(latitude, longitude, getTreeName(latitude, longitude), MapPOIItem.MarkerType.YellowPin, MapPOIItem.MarkerType.RedPin);
+    private void createTreeMarker(int id, double lat, double lng, String treeName) {
+        if (treeName.length() == 0) treeName = "나는야나무";
+        MapPoint mapPoint = MapPoint.mapPointWithGeoCoord(lat, lng);
+        MapPOIItem marker = new MapPOIItem();
+        marker.setItemName(treeName);
+        marker.setTag(id);
+        marker.setMapPoint(mapPoint);
+        marker.setMarkerType(MapPOIItem.MarkerType.BluePin);
+        marker.setSelectedMarkerType(MapPOIItem.MarkerType.RedPin);
+        mapView.addPOIItem(marker);
     }
 
 
@@ -227,12 +317,12 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
 
 
 
-    // setTreeInfoLayout: 위도와 경도를 참조하여 가로수 정보 레이아웃을 채운다.
-    private void setTreeInfoLayout(double latitude, double longitude) {
-        txtTreeName.setText(getTreeName(latitude, longitude));
+    // setTreeInfoLayout:
+    private void setTreeInfoLayout(String name, double latitude, double longitude, String author) {
+        txtTreeName.setText(name);
         txtTreeLatitude.setText(Double.toString(latitude));
         txtTreeLongitude.setText(Double.toString(longitude));
-        txtTreeAuthor.setText(getAuthor(latitude, longitude));
+        txtTreeAuthor.setText(author);
     }
     private String getTreeName(double latitude, double longitude) {
         int a = (int)(latitude * 1000000) - (int)(latitude * 10000) * 100;
@@ -283,6 +373,8 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     @Override
     public void onMapViewSingleTapped(MapView mapView, MapPoint mapPoint) {
         treeInfoLayout.setVisibility(View.GONE);
+        selectedIndex = -1;
+        selectedMarker = null;
     }
 
     @Override
@@ -314,10 +406,34 @@ public class MainActivity extends AppCompatActivity implements MapView.MapViewEv
     // ====== MapView.POIItemEventListener ======
     @Override
     public void onPOIItemSelected(MapView mapView, MapPOIItem mapPOIItem) {
+        selectedMarker = mapPOIItem;
+        selectedIndex = mapPOIItem.getTag();
         double latitude = mapPOIItem.getMapPoint().getMapPointGeoCoord().latitude;
         double longitude = mapPOIItem.getMapPoint().getMapPointGeoCoord().longitude;
-        setTreeInfoLayout(latitude, longitude);
         treeInfoLayout.setVisibility(View.VISIBLE);
+
+
+
+
+        databaseReference.get().addOnSuccessListener(new OnSuccessListener<DataSnapshot>() {
+            @Override
+            public void onSuccess(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                    int readIndex = Integer.parseInt(postSnapshot.child("id").getValue().toString());
+                    if (selectedIndex == readIndex) {
+                        String author = postSnapshot.child("user_name").getValue(String.class);
+
+                        setTreeInfoLayout(selectedMarker.getItemName(), latitude, longitude, author);
+
+                    }
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("파이어베이스", ".");
+            }
+        });
     }
 
     @Override

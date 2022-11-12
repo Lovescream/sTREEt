@@ -1,7 +1,9 @@
 package com.jyoon.hackathon2022_test3;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -40,6 +42,14 @@ public class RenameActivity extends AppCompatActivity {
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent2 = new Intent();
+                intent2.putExtra("index", intent.getIntExtra("index", 0));
+                intent2.putExtra("latitude", intent.getDoubleExtra("latitude", 0));
+                intent2.putExtra("longitude", intent.getDoubleExtra("longitude", 0));
+                intent2.putExtra("newName", inputTreeName.getText().toString());
+                intent2.putExtra("newAuthor", inputAuthor.getText().toString());
+                Log.d("파이어베이스", inputTreeName.getText().toString());
+                setResult(Activity.RESULT_OK, intent2);
                 finish();
             }
         });
