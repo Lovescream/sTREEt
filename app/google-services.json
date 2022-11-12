@@ -1,0 +1,127 @@
+{
+  "project_info": {
+    "project_number": "848882542011",
+    "firebase_url": "https://opensw-eb225-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "opensw-eb225",
+    "storage_bucket": "opensw-eb225.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:848882542011:android:f0aa97c5c5f2975732d09e",
+        "android_client_info": {
+          "package_name": "com.example.forfirebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "848882542011-9h3npo6g9me6o2132bpfe896do5uab2t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBt9gz9TIzxfL8ZUMQ-QevztdXaysGonMo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "848882542011-9h3npo6g9me6o2132bpfe896do5uab2t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:848882542011:android:0d18098f52f8f19f32d09e",
+        "android_client_info": {
+          "package_name": "com.jyoon.hackathon2022_test3"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "848882542011-9h3npo6g9me6o2132bpfe896do5uab2t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBt9gz9TIzxfL8ZUMQ-QevztdXaysGonMo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "848882542011-9h3npo6g9me6o2132bpfe896do5uab2t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:848882542011:android:150cd2cb41c74ad632d09e",
+        "android_client_info": {
+          "package_name": "com.opensw.workoutmatchingApp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "848882542011-9h3npo6g9me6o2132bpfe896do5uab2t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBt9gz9TIzxfL8ZUMQ-QevztdXaysGonMo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "848882542011-9h3npo6g9me6o2132bpfe896do5uab2t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:848882542011:android:c48f80f361f9062332d09e",
+        "android_client_info": {
+          "package_name": "net.flow9.thisiskotlin.firebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "848882542011-9h3npo6g9me6o2132bpfe896do5uab2t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBt9gz9TIzxfL8ZUMQ-QevztdXaysGonMo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "848882542011-9h3npo6g9me6o2132bpfe896do5uab2t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

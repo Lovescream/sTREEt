@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/treeInfoLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/textTreeName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="가로수 이름: "/>
+            <TextView
+                android:id="@+id/txtTreeName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="가로수002"
+                android:layout_toRightOf="@+id/textTreeName"/>
+            <TextView
+                android:id="@+id/textTreeLatitude"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="위도: "
+                android:layout_below="@+id/textTreeName"/>
+            <TextView
+                android:id="@+id/txtTreeLatitude"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="111.111111"
+                android:layout_alignTop="@+id/textTreeLatitude"
+                android:layout_toRightOf="@+id/textTreeLatitude"/>
+            <TextView
+                android:id="@+id/textTreeLongitude"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="경도: "
+                android:layout_below="@+id/textTreeLatitude"/>
+            <TextView
+                android:id="@+id/txtTreeLongitude"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="111.111111"
+                android:layout_alignTop="@+id/textTreeLongitude"
+                android:layout_toRightOf="@+id/textTreeLongitude"/>
+            <TextView
+                android:id="@+id/textAuthor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="가로수 이름 지은 사람: "
+                android:layout_below="@+id/textTreeLongitude"/>
+            <TextView
+                android:id="@+id/txtAuthor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="김철수"
+                android:layout_alignTop="@+id/textAuthor"
+                android:layout_toRightOf="@+id/textAuthor"/>
+            <Button
+                android:id="@+id/btnRename"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="이름 짓기"
+                android:layout_below="@+id/textAuthor"/>
+
+
+
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/btnGetLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="위치 정보 받기"
+            android:visibility="gone"/>
+
+
+        <RelativeLayout
+            android:id="@+id/map_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+
+    </LinearLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
